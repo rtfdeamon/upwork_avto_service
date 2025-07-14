@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ApiKey } from './entities/api-key.entity';
+import { RuleSet } from './entities/rule-set.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -10,6 +11,6 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'upwork',
   password: process.env.DB_PASS || 'upwork',
   database: process.env.DB_NAME || 'upwork',
-  entities: [User, ApiKey],
+  entities: [User, ApiKey, RuleSet],
   migrations: ['src/migrations/*.ts'],
 });
