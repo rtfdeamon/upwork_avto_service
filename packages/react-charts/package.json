@@ -1,0 +1,19 @@
+{
+  "name": "@tanstack/react-charts",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

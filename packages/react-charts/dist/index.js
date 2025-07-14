@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Tooltip = exports.AreaSeries = exports.BarSeries = exports.LineSeries = exports.Axis = exports.Chart = void 0;
+const Chart = () => null;
+exports.Chart = Chart;
+const Axis = () => null;
+exports.Axis = Axis;
+const LineSeries = () => null;
+exports.LineSeries = LineSeries;
+const BarSeries = () => null;
+exports.BarSeries = BarSeries;
+const AreaSeries = () => null;
+exports.AreaSeries = AreaSeries;
+const Tooltip = () => null;
+exports.Tooltip = Tooltip;
