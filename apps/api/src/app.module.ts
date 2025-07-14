@@ -28,6 +28,7 @@ import { TenantMiddleware } from './tenant/tenant.middleware';
       password: process.env.DB_PASS || 'upwork',
       database: process.env.DB_NAME || 'upwork',
       entities: [User, ApiKey, RuleSet, Proposal, Conversation, Webhook],
+      entities: [User, ApiKey, RuleSet],
       synchronize: false,
     }),
     AuthModule,

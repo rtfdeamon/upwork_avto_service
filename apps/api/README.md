@@ -1,5 +1,6 @@
 # API
 
+
 This NestJS service exposes REST endpoints for authentication, ruleset management and Stripe billing. After building with `pnpm --filter api run build`, start it via `node dist/index.js`.
 
 ### Environment
