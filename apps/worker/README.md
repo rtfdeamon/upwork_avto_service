@@ -1,0 +1,3 @@
+# Worker
+
+Polling worker placeholder.
