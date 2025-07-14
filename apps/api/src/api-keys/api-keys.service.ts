@@ -20,7 +20,7 @@ export class ApiKeysService {
   async create(userId: string, data: Partial<ApiKey>) {
     const user = await this.users.findOneBy({ id: userId });
     if (!user) return null;
-    const key = this.keys.create({ ...data, user });
+    const key = this.keys.create({ ...data, user, alias: data.alias });
     return this.keys.save(key);
   }
 }

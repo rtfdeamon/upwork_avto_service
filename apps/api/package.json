@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node dist/index.js",
     "migration:run": "ts-node ./src/migration-runner.ts",
-    "test": "ts-node ./test/upwork-auth.e2e.ts"
+    "test": "ts-node ./test/upwork-auth.e2e.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -14,6 +15,9 @@
     "@nestjs/axios": "^3.0.0",
     "@nestjs/schedule": "^2.0.0",
     "axios": "^1.6.7",
+    "stripe": "^12.0.0",
+    "@opentelemetry/sdk-node": "^0.203.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.203.0",
     "json-logic-js": "^2.0.2",
     "@nestjs/typeorm": "^10.0.0",
     "pg": "^8.11.0",

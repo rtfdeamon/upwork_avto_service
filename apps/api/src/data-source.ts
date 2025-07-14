@@ -3,6 +3,10 @@ import { DataSource } from 'typeorm';
 import { User } from './entities/user.entity';
 import { ApiKey } from './entities/api-key.entity';
 import { RuleSet } from './entities/rule-set.entity';
+import { Proposal } from './entities/proposal.entity';
+import { Conversation } from './entities/conversation.entity';
+import { Webhook } from './entities/webhook.entity';
+import { TenantSubscriber } from './tenant/tenant.subscriber';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -11,6 +15,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'upwork',
   password: process.env.DB_PASS || 'upwork',
   database: process.env.DB_NAME || 'upwork',
-  entities: [User, ApiKey, RuleSet],
+  entities: [User, ApiKey, RuleSet, Proposal, Conversation, Webhook],
+  subscribers: [TenantSubscriber],
   migrations: ['src/migrations/*.ts'],
 });

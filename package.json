@@ -6,8 +6,21 @@
     "apps/*",
     "packages/*"
   ],
+
+  "scripts": {
+    "worker:dev": "ts-node-dev apps/worker/src/handler.ts",
+    "poller:dev": "ts-node-dev apps/worker/src/poller.ts",
+    "draft:dev": "ts-node-dev apps/worker/src/draft-handler.ts",
+    "activity:dev": "ts-node-dev apps/worker/src/activity-feed.ts",
+    "lint": "eslint '**/*.{ts,tsx}'",
+    "test": "pnpm --filter api test",
+    "smoke": "TS_NODE_PROJECT=tests/tsconfig.json ts-node tests/smoke/simulateJobs.spec.ts"
+  },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "ts-node-dev": "^2.0.0",
+    "ts-node": "^10.9.1",
+    "@aws-sdk/client-sqs": "^3.521.0"
   }
 }
