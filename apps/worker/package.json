@@ -18,7 +18,9 @@
     "json-logic-js": "^2.0.2",
     "openai": "^4.40.0",
     "@opentelemetry/sdk-node": "^0.203.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.203.0"
+    "@opentelemetry/exporter-trace-otlp-http": "^0.203.0",
+    "@opentelemetry/instrumentation-http": "^0.56.0",
+    "@opentelemetry/instrumentation-aws-sdk": "^0.56.0"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.119",

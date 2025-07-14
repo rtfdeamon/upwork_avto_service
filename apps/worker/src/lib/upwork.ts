@@ -67,13 +67,14 @@ export async function submitProposal(
 export interface ActivityMessage {
   id: string;
   jobId: string;
+  jobTitle?: string;
   snippet: string;
   ts: string;
   author: string;
 }
 
 export async function fetchActivityFeed(token: string): Promise<ActivityMessage[]> {
-  const query = '{ ActivityFeed { id jobId snippet ts author } }';
+  const query = '{ ActivityFeed { id jobId jobTitle snippet ts author } }';
   try {
     const res = await axios.post(
       'https://www.upwork.com/api/graphql',

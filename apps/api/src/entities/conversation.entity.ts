@@ -12,6 +12,9 @@ export class Conversation {
   @Column()
   jobId!: string;
 
+  @Column({ nullable: true })
+  jobTitle?: string;
+
   @Column('text')
   snippet!: string;
 

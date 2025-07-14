@@ -13,4 +13,18 @@ export class MetricsController {
     const days = match ? parseInt(match[1], 10) : 30;
     return this.service.summary(req.user.id, days);
   }
+
+  @Get('series')
+  series(
+    @Req() req: any,
+    @Query('kind') kind: string,
+    @Query('range') range = '30d',
+  ) {
+    const match = /^(\d+)d$/.exec(range);
+    const days = match ? parseInt(match[1], 10) : 30;
+    if (!['sent', 'replies', 'wins'].includes(kind)) {
+      return [];
+    }
+    return this.service.series(req.user.id, days, kind as any);
+  }
 }

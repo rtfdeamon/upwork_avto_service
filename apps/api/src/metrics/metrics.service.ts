@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Proposal, ProposalStatus } from '../entities/proposal.entity';
 import { Conversation } from '../entities/conversation.entity';
+import { Metric } from '../entities/metric.entity';
 
 @Injectable()
 export class MetricsService {
   constructor(
     @InjectRepository(Proposal) private proposals: Repository<Proposal>,
     @InjectRepository(Conversation) private convos: Repository<Conversation>,
+    @InjectRepository(Metric) private metrics: Repository<Metric>,
   ) {}
 
   async summary(userId: string, days: number) {
@@ -63,5 +65,25 @@ export class MetricsService {
       { sent: 0, replies: 0 },
     );
     return { daily, totals };
+  }
+
+
+  async series(userId: string, days: number, kind: 'sent' | 'replies' | 'wins') {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+
+    const rows = await this.metrics
+      .createQueryBuilder('m')
+      .select('m.day', 'day')
+      .addSelect(`m.${kind}`, 'value')
+      .where('m.userId = :userId', { userId })
+      .andWhere('m.day >= :since', { since })
+      .orderBy('m.day', 'ASC')
+      .getRawMany<{ day: Date; value: string }>();
+
+    return rows.map((r) => ({
+      day: r.day.toISOString().slice(0, 10),
+      value: parseInt(r.value, 10),
+    }));
   }
 }

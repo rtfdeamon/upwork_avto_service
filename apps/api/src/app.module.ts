@@ -10,6 +10,7 @@ import { RuleSet } from './entities/rule-set.entity';
 import { Proposal } from './entities/proposal.entity';
 import { Conversation } from './entities/conversation.entity';
 import { Webhook } from './entities/webhook.entity';
+import { Member } from './entities/member.entity';
 import { RulesetsModule } from './rulesets/rulesets.module';
 import { MeController } from './controllers/me.controller';
 import { MetricsModule } from './metrics/metrics.module';
@@ -17,6 +18,8 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { MembersModule } from './members/members.module';
 import { BillingModule } from './billing/billing.module';
 import { TenantMiddleware } from './tenant/tenant.middleware';
+import { ConversationsModule } from './conversations/conversations.module';
+import { ProposalsModule } from './proposals/proposals.module';
 
 @Module({
   imports: [
@@ -27,8 +30,7 @@ import { TenantMiddleware } from './tenant/tenant.middleware';
       username: process.env.DB_USER || 'upwork',
       password: process.env.DB_PASS || 'upwork',
       database: process.env.DB_NAME || 'upwork',
-      entities: [User, ApiKey, RuleSet, Proposal, Conversation, Webhook],
-      entities: [User, ApiKey, RuleSet],
+      entities: [User, ApiKey, RuleSet, Proposal, Conversation, Webhook, Member],
       synchronize: false,
     }),
     AuthModule,
@@ -40,6 +42,8 @@ import { TenantMiddleware } from './tenant/tenant.middleware';
     WebhooksModule,
     MembersModule,
     BillingModule,
+    ConversationsModule,
+    ProposalsModule,
   ],
   controllers: [MeController],
 })

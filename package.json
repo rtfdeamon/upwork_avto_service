@@ -6,7 +6,6 @@
     "apps/*",
     "packages/*"
   ],
-
   "scripts": {
     "worker:dev": "ts-node-dev apps/worker/src/handler.ts",
     "poller:dev": "ts-node-dev apps/worker/src/poller.ts",
@@ -14,6 +13,7 @@
     "activity:dev": "ts-node-dev apps/worker/src/activity-feed.ts",
     "lint": "eslint '**/*.{ts,tsx}'",
     "test": "pnpm --filter api test",
+    "test:e2e": "pnpm --filter api test",
     "smoke": "TS_NODE_PROJECT=tests/tsconfig.json ts-node tests/smoke/simulateJobs.spec.ts"
   },
   "devDependencies": {

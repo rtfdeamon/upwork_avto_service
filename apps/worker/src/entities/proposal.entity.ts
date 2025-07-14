@@ -13,6 +13,11 @@ export enum ProposalStatus {
   ERROR = 'ERROR',
 }
 
+export enum ProposalFeedback {
+  UP = 'up',
+  DOWN = 'down',
+}
+
 @Entity()
 export class Proposal {
   @PrimaryGeneratedColumn('uuid')
@@ -38,6 +43,9 @@ export class Proposal {
 
   @Column({ type: 'text', nullable: true })
   errorReason!: string | null;
+
+  @Column({ type: 'enum', enum: ProposalFeedback, nullable: true })
+  feedback!: ProposalFeedback | null;
 
   @CreateDateColumn()
   createdAt!: Date;

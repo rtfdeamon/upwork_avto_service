@@ -20,8 +20,29 @@ export class WebhooksService {
   async create(userId: string, data: Partial<Webhook>) {
     const user = await this.users.findOneBy({ id: userId });
     if (!user) return null;
-    const hook = this.hooks.create({ ...data, user });
+    const hook = this.hooks.create({
+      url: data.url!,
+      type: data.type!,
+      user,
+      secret: crypto.randomBytes(16).toString('hex'),
+    });
     return this.hooks.save(hook);
+  }
+
+  async test(userId: string, hookId: string) {
+    const hook = await this.hooks.findOne({
+      where: { id: hookId, user: { id: userId } },
+    });
+    if (!hook) return;
+    const payload = { message: 'Webhook OK' };
+    const body = JSON.stringify(payload);
+    const sig = crypto.createHmac('sha256', hook.secret).update(body).digest('hex');
+    try {
+      await axios.post(hook.url, payload, { headers: { 'x-signature': sig } });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('webhook test failed', err);
+    }
   }
 
   async dispatch(userId: string, payload: any) {

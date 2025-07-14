@@ -37,8 +37,51 @@ jobs:
           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_API }}:latest
           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest
 
-  deploy:
+  smoke:
     needs: build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: upwork
+          POSTGRES_PASSWORD: upwork
+          POSTGRES_DB: upwork
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=5
+      localstack:
+        image: localstack/localstack
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: sqs
+        options: >-
+          --health-cmd="curl -f http://localhost:4566/ || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test:e2e && pnpm run smoke | tee smoke.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smoke.log
+          path: smoke.log
+
+  deploy:
+    needs: [build, smoke]
     runs-on: ubuntu-latest
     environment: production
     env:

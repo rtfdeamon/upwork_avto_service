@@ -2,13 +2,13 @@ import { Chart, AxisOptions } from '@tanstack/react-charts'
 import { useMemo } from 'react'
 
 interface Point { date: Date; value: number }
-interface Props { data: { day: string; sent: number; replies: number }[] }
+interface Props { chartData: { day: string; value: number }[] }
 
-export default function RoiTrend({ data }: Props) {
+export default function RoiTrend({ chartData }: Props) {
   const series = useMemo(() => [{
-    label: 'ROI',
-    data: data.map(d => ({ date: new Date(d.day), value: d.sent ? d.replies / d.sent * 100 : 0 })),
-  }], [data])
+    label: 'Value',
+    data: chartData.map(d => ({ date: new Date(d.day), value: d.value })),
+  }], [chartData])
 
   const primaryAxis = useMemo<AxisOptions<Point>>(() => ({
     getValue: datum => datum.date,

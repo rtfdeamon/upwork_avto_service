@@ -36,7 +36,6 @@ export class UpworkAuthService {
     params.append('grant_type', 'refresh_token');
     params.append('refresh_token', refreshToken);
 
-
     try {
       const res = await this.http.axiosRef.post(this.tokenUrl, params.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

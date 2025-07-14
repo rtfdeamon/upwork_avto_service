@@ -13,12 +13,16 @@ export default function Overview() {
     session ? [`${process.env.NEXT_PUBLIC_API_URL}/metrics/summary?range=30d`, session.accessToken] : null,
     ([url, token]) => fetcher(url, token)
   );
+  const { data: series } = useSWR(
+    session ? [`${process.env.NEXT_PUBLIC_API_URL}/metrics/series?kind=sent&range=30d`, session.accessToken] : null,
+    ([url, token]) => fetcher(url, token)
+  );
   return (
     <div>
       <h1>Overview</h1>
+      {series ? <RoiTrend chartData={series} /> : null}
       {data ? (
         <div>
-          <RoiTrend data={data.daily} />
           <ProposalFunnel data={data.daily} />
           <WinRateByMonth data={data.daily} />
         </div>

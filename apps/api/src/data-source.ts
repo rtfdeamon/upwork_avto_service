@@ -6,6 +6,8 @@ import { RuleSet } from './entities/rule-set.entity';
 import { Proposal } from './entities/proposal.entity';
 import { Conversation } from './entities/conversation.entity';
 import { Webhook } from './entities/webhook.entity';
+import { Metric } from './entities/metric.entity';
+import { Member } from './entities/member.entity';
 import { TenantSubscriber } from './tenant/tenant.subscriber';
 
 export const AppDataSource = new DataSource({
@@ -15,7 +17,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'upwork',
   password: process.env.DB_PASS || 'upwork',
   database: process.env.DB_NAME || 'upwork',
-  entities: [User, ApiKey, RuleSet, Proposal, Conversation, Webhook],
+  entities: [User, ApiKey, RuleSet, Proposal, Conversation, Webhook, Metric, Member],
   subscribers: [TenantSubscriber],
   migrations: ['src/migrations/*.ts'],
 });

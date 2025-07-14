@@ -1,33 +1,36 @@
-import { Body, Controller, Get, Headers, Param, Post, UnauthorizedException } from '@nestjs/common';
-import crypto from 'crypto';
+
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { WebhooksService } from './webhooks.service';
 import { Webhook } from '../entities/webhook.entity';
 
 @Controller('webhooks')
+@UseGuards(JwtAuthGuard)
 export class WebhooksController {
   constructor(private service: WebhooksService) {}
 
-  @Get(':userId')
-  list(@Param('userId') userId: string) {
-    return this.service.list(userId);
-  }
-
-  @Post(':userId')
-  create(@Param('userId') userId: string, @Body() body: Partial<Webhook>) {
-    return this.service.create(userId, body);
+  @Get()
+  list(@Req() req: Request) {
+    return this.service.list((req as any).user.id);
   }
 
   @Post()
-  async dispatch(
-    @Body() body: { userId: string; jobId: string; msgSnippet: string },
-    @Headers('x-signature') sig: string,
-  ) {
-    const calc = crypto
-      .createHmac('sha256', process.env.WEBHOOK_SECRET || '')
-      .update(JSON.stringify(body))
-      .digest('hex');
-    if (sig !== calc) throw new UnauthorizedException('bad signature');
-    await this.service.dispatch(body.userId, { jobId: body.jobId, msgSnippet: body.msgSnippet });
-    return { status: 'ok' };
+  create(@Req() req: Request, @Body() body: Partial<Webhook>) {
+    return this.service.create((req as any).user.id, body);
+  }
+
+  @Post(':id/test')
+  async test(@Req() req: Request, @Param('id') id: string) {
+    await this.service.test((req as any).user.id, id);
+    return { status: 'sent' };
   }
 }
