@@ -1,0 +1,25 @@
+import { useSession } from 'next-auth/react';
+
+export default function Billing() {
+  const { data: session } = useSession();
+  const handleUpgrade = async () => {
+    if (!session) return;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/stripe/checkout-session`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      },
+    );
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+  };
+  return (
+    <div>
+      <h1>Billing</h1>
+      <button onClick={handleUpgrade}>Upgrade $49/mo</button>
+    </div>
+  );
+}

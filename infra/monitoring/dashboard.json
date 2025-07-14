@@ -1,0 +1,28 @@
+{
+  "dashboard": {
+    "title": "Upwork Service",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Request latency",
+        "targets": [
+          {"expr": "histogram_quantile(0.95, rate(http_server_duration_bucket[1m]))"}
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Error rate",
+        "targets": [
+          {"expr": "sum(rate(http_server_errors_total[1m])) / sum(rate(http_server_requests_total[1m]))"}
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Proposals sent",
+        "targets": [
+          {"expr": "sum(rate(proposals_sent_total[1m]))"}
+        ]
+      }
+    ]
+  }
+}

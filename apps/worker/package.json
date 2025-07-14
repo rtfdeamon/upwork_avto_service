@@ -1,0 +1,31 @@
+{
+  "name": "worker",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "poller:dev": "ts-node-dev src/poller.ts",
+    "activity:dev": "ts-node-dev src/activity-feed.ts"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "@aws-sdk/client-sqs": "^3.521.0",
+    "ioredis": "^5.3.2",
+    "typeorm": "^0.3.17",
+    "pg": "^8.11.0",
+    "reflect-metadata": "^0.1.13",
+    "json-logic-js": "^2.0.2",
+    "openai": "^4.40.0",
+    "@opentelemetry/sdk-node": "^0.203.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.203.0",
+    "@opentelemetry/instrumentation-http": "^0.56.0",
+    "@opentelemetry/instrumentation-aws-sdk": "^0.56.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
+    "@types/node": "^24.0.13",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.0"
+  }
+}
