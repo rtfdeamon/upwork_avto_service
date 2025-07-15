@@ -5,6 +5,8 @@ import { ApiKey } from './entities/api-key.entity';
 import { Proposal, ProposalStatus } from './entities/proposal.entity';
 import { SubscriptionStatus } from './entities/user.entity';
 import { generateDraft } from './lib/openai';
+
+import { submitProposal } from './lib/upwork';
 import { log, error } from './logger';
 
 let ready = false;
@@ -28,6 +30,7 @@ export const handler: SQSHandler = async (event) => {
     const draftText = await generateDraft('profile', payload.jobJson, []);
     const proposal = propRepo.create({
       user: key.user,
+
       apiKey: key,
       jobId: payload.jobJson.id,
       jobTitle: payload.jobJson.title,

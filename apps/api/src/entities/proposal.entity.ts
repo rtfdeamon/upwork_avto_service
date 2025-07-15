@@ -30,6 +30,7 @@ export class Proposal {
   @Column()
   jobId!: string;
 
+
   @Column({ nullable: true })
   jobTitle!: string | null;
 
