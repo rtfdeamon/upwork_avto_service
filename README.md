@@ -187,13 +187,11 @@ This spec should give Codex (or any engineer) enough clarity to scaffold reposit
 
 ## Development
 
-1. Install dependencies with `pnpm install`.
-2. Start Postgres with `docker-compose up -d postgres`.
-3. Run database migrations using `pnpm --filter api run migration:run`.
-4. Launch the API server: `node dist/index.js` after `pnpm --filter api run build`.
-5. Workers can be run locally via `pnpm poller:dev` or `pnpm draft:dev`.
-6. Execute the smoke test with `npm run smoke` to verify end-to-end behaviour.
-7. Start Grafana and Tempo with `make dev-observe` to collect traces locally.
+1. Run `./scripts/bootstrap.sh` to install dependencies, start services and run migrations.
+2. Launch the API server: `node dist/index.js` after `pnpm --filter api run build`.
+3. Workers can be run locally via `pnpm poller:dev` or `pnpm draft:dev`.
+4. Execute the smoke test with `npm run smoke` to verify end-to-end behaviour.
+5. Start Grafana and Tempo with `make dev-observe` to collect traces locally.
 
 Logs are printed with timestamps and all API requests are logged with status codes.
 Errors are captured by a global filter and displayed in JSON format.

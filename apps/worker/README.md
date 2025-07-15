@@ -2,6 +2,8 @@
 
 This directory contains Lambda handlers for polling Upwork jobs and processing proposal drafts. Run `pnpm poller:dev` or `pnpm draft:dev` to execute them locally.
 
+The root `bootstrap.sh` script sets up the dependencies and database required for the workers as well.
+
 ### Environment
 
 - `DB_*` variables for Postgres

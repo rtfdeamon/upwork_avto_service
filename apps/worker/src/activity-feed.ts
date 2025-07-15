@@ -1,6 +1,5 @@
 import './tracing';
 import 'reflect-metadata';
-
 import { AppDataSource } from './data-source';
 import { ApiKey } from './entities/api-key.entity';
 import { User, SubscriptionStatus } from './entities/user.entity';

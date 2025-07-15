@@ -67,7 +67,6 @@ export class MetricsService {
     return { daily, totals };
   }
 
-
   async series(userId: string, days: number, kind: 'sent' | 'replies' | 'wins') {
     const since = new Date();
     since.setDate(since.getDate() - days);

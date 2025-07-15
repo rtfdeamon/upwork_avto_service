@@ -1,4 +1,5 @@
 import { useSession } from 'next-auth/react';
+import Layout from '../../components/Layout';
 
 export default function Billing() {
   const { data: session } = useSession();
@@ -17,9 +18,11 @@ export default function Billing() {
     if (data.url) window.location.href = data.url;
   };
   return (
-    <div>
+    <Layout>
       <h1>Billing</h1>
-      <button onClick={handleUpgrade}>Upgrade $49/mo</button>
-    </div>
+      <div className="card">
+        <button className="upgrade-btn" onClick={handleUpgrade}>Upgrade $49/mo</button>
+      </div>
+    </Layout>
   );
 }

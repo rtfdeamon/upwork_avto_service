@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
+import Layout from '../../components/Layout';
 
 const fetcher = (url: string, token: string) =>
   fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json());
@@ -12,9 +13,10 @@ export default function Conversations() {
   );
 
   return (
-    <div>
+    <Layout>
       <h1>Conversations</h1>
-      <table>
+      <div className="card">
+      <table className="convo-table">
         <thead>
           <tr>
             <th>Job Title</th>
@@ -38,6 +40,7 @@ export default function Conversations() {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </Layout>
   );
 }

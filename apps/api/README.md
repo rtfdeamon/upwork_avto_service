@@ -2,6 +2,8 @@
 
 This NestJS service exposes REST endpoints for authentication, ruleset management and Stripe billing. After building with `pnpm --filter api run build`, start it via `node dist/index.js`.
 
+During development the project root provides `./scripts/bootstrap.sh` which installs dependencies, starts Postgres via Docker Compose and runs migrations so the API can be launched immediately.
+
 ### Environment
 
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME` – Postgres connection

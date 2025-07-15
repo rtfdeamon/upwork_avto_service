@@ -5,6 +5,7 @@ import { ApiKey } from './entities/api-key.entity';
 import { Proposal, ProposalStatus } from './entities/proposal.entity';
 import { SubscriptionStatus } from './entities/user.entity';
 import { generateDraft } from './lib/openai';
+
 import { submitProposal } from './lib/upwork';
 import { log, error } from './logger';
 
@@ -29,28 +30,13 @@ export const handler: SQSHandler = async (event) => {
     const draftText = await generateDraft('profile', payload.jobJson, []);
     const proposal = propRepo.create({
       user: key.user,
+
+      apiKey: key,
       jobId: payload.jobJson.id,
+      jobTitle: payload.jobJson.title,
       draft: draftText,
       status: ProposalStatus.DRAFT,
     });
-    await propRepo.save(proposal);
-
-    const posted = new Date(payload.jobJson.postedAt || Date.now());
-    const latencyMin = (Date.now() - posted.getTime()) / 60000;
-    let connects = payload.connectsBudget || 2;
-    if (latencyMin > 10) connects += 2;
-
-    try {
-      await submitProposal(key.upworkKey, payload.jobJson.id, draftText, connects);
-      proposal.status = ProposalStatus.SENT;
-      proposal.sentAt = new Date();
-      proposal.connectsUsed = connects;
-      log(`sent proposal for ${payload.jobJson.id}`);
-    } catch (e: any) {
-      proposal.status = ProposalStatus.ERROR;
-      proposal.errorReason = e.message;
-      error(`submit failed for ${payload.jobJson.id}`, e.message);
-    }
     await propRepo.save(proposal);
   }
 };

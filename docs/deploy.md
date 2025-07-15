@@ -13,4 +13,6 @@ After Terragrunt finishes, execute the post-deploy script to create the EventBri
 ./scripts/post_deploy.sh
 ```
 
+For local development, `./scripts/bootstrap.sh` sets up Postgres and observability services in one command.
+
 The modules provision the VPC, RDS instance, Lambda functions, the Fargate poller service, an ALB for the API and an S3 bucket for static assets.

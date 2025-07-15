@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, IsNull } from 'typeorm';
-import { Proposal, ProposalFeedback } from '../entities/proposal.entity';
+import { Proposal, ProposalFeedback, ProposalStatus } from '../entities/proposal.entity';
 import { Cron } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 
@@ -11,8 +11,28 @@ export class ProposalsService {
     @InjectRepository(Proposal) private proposals: Repository<Proposal>,
   ) {}
 
+  listForUser(userId: string, status?: ProposalStatus) {
+    const where: any = { user: { id: userId } };
+    if (status) where.status = status;
+    return this.proposals.find({ where });
+  }
+
   async setFeedback(id: string, feedback: ProposalFeedback) {
     await this.proposals.update({ id }, { feedback });
+  }
+
+  async findOwned(id: string, userId: string) {
+    return this.proposals.findOne({
+      where: { id, user: { id: userId } },
+      relations: ['apiKey'],
+    });
+  }
+
+  async markSent(id: string) {
+    await this.proposals.update(
+      { id },
+      { status: ProposalStatus.SENT, sentAt: new Date() },
+    );
   }
 
   @Cron('0 2 * * *')

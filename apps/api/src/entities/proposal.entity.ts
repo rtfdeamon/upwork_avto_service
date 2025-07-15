@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { ApiKey } from './api-key.entity';
 
 export enum ProposalStatus {
   DRAFT = 'DRAFT',
@@ -29,11 +30,18 @@ export class Proposal {
   @Column()
   jobId!: string;
 
+
+  @Column({ nullable: true })
+  jobTitle!: string | null;
+
   @Column('text')
   draft!: string;
 
   @Column({ type: 'enum', enum: ProposalStatus, default: ProposalStatus.DRAFT })
   status!: ProposalStatus;
+
+  @ManyToOne(() => ApiKey, { nullable: true, onDelete: 'SET NULL' })
+  apiKey!: ApiKey | null;
 
   @Column({ type: 'timestamptz', nullable: true })
   sentAt!: Date | null;

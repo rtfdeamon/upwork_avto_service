@@ -22,7 +22,9 @@ export default function Login({ csrfToken }: { csrfToken: string }) {
         Password
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       </label>
-      <button type="submit">Sign in</button>
+      <div className="card">
+        <button type="submit">Sign in</button>
+      </div>
     </form>
   );
 }

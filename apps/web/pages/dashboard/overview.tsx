@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react';
 import RoiTrend from '../../components/RoiTrend';
 import ProposalFunnel from '../../components/ProposalFunnel';
 import WinRateByMonth from '../../components/WinRateByMonth';
+import Layout from '../../components/Layout';
 
 const fetcher = (url: string, token: string) =>
   fetch(url, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json());
@@ -18,15 +19,15 @@ export default function Overview() {
     ([url, token]) => fetcher(url, token)
   );
   return (
-    <div>
+    <Layout>
       <h1>Overview</h1>
-      {series ? <RoiTrend chartData={series} /> : null}
+      {series ? <div className="card"><RoiTrend chartData={series} /></div> : null}
       {data ? (
-        <div>
+        <div className="card">
           <ProposalFunnel data={data.daily} />
           <WinRateByMonth data={data.daily} />
         </div>
       ) : null}
-    </div>
+    </Layout>
   );
 }
