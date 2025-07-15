@@ -5,6 +5,18 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$DIR")"
 cd "$ROOT"
 
+# Ensure Docker daemon is running
+if ! docker info >/dev/null 2>&1; then
+  echo "Docker daemon is not running. Please start Docker and retry." >&2
+  exit 1
+fi
+
+# Ensure pnpm exists
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "pnpm not found. Install pnpm before running." >&2
+  exit 1
+fi
+
 # bootstrap dependencies
 "$DIR"/bootstrap.sh
 

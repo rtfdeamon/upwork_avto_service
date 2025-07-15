@@ -193,7 +193,10 @@ For a single-command setup execute:
 ./scripts/start_all.sh
 ```
 
-The script installs dependencies, starts supporting services, builds the API and runs the poller worker together with the API server.
+This requires Docker with Docker Compose running and `pnpm` installed globally.
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. Stop both processes with `Ctrl+C`.
 
 Manual steps if you prefer running each piece separately:
 
