@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: upwork
+      POSTGRES_PASSWORD: upwork
+      POSTGRES_DB: upwork
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./infra/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  tempo:
+    image: grafana/tempo:latest
+    command: ["--config.file=/etc/tempo.yml"]
+    volumes:
+      - ./infra/monitoring/tempo.yml:/etc/tempo.yml:ro
+    ports:
+      - '3200:3200'
+  promtail:
+    image: grafana/promtail:latest
+    command: -config.file=/etc/promtail.yml
+    volumes:
+      - ./infra/monitoring/promtail.yml:/etc/promtail.yml:ro
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./infra/monitoring/dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json:ro
+volumes:
+  db-data:
