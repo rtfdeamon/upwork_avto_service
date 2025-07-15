@@ -187,6 +187,19 @@ This spec should give Codex (or any engineer) enough clarity to scaffold reposit
 
 ## Development
 
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+This requires Docker with Docker Compose running and `pnpm` installed globally.
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. Stop both processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
 1. Run `./scripts/bootstrap.sh` to install dependencies, start services and run migrations.
 2. Launch the API server: `node dist/index.js` after `pnpm --filter api run build`.
 3. Workers can be run locally via `pnpm poller:dev` or `pnpm draft:dev`.
