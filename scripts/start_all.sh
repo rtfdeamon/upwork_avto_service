@@ -3,6 +3,7 @@ set -e
 # fail if variables are undefined or a pipeline fails
 set -o pipefail
 set -u
+
 # Start full stack locally
 DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$DIR")"
@@ -37,6 +38,7 @@ if ! docker info >/dev/null 2>&1; then
   fi
 fi
 
+
 # Ensure Node.js is available
 if ! command -v node >/dev/null 2>&1; then
   echo "Node.js is not installed. Install Node.js 18+ first: https://nodejs.org" >&2
@@ -61,7 +63,9 @@ fi
 pnpm --filter api run build
 
 # start API and worker in background
+
 PORT=${PORT:-4000} node apps/api/dist/main.js &
+
 API_PID=$!
 pnpm poller:dev &
 WORKER_PID=$!
