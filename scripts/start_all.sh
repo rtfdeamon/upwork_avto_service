@@ -9,6 +9,13 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$DIR")"
 cd "$ROOT"
 
+
+# Optionally drop existing database volume to start fresh
+if [[ "${RESET_DB:-}" == "1" ]]; then
+  docker compose down -v >/dev/null 2>&1 || true
+fi
+
+
 # Ensure Docker CLI exists
 if ! command -v docker >/dev/null 2>&1; then
   echo "Docker is not installed. Follow https://docs.docker.com/get-docker/" >&2
