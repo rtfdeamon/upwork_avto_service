@@ -187,16 +187,23 @@ This spec should give Codex (or any engineer) enough clarity to scaffold reposit
 
 ## Development
 
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ and `pnpm` available globally (`npm install -g pnpm`).
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
 For a single-command setup execute:
 
 ```bash
 ./scripts/start_all.sh
 ```
 
-This requires Docker with Docker Compose running and `pnpm` installed globally.
 The helper script installs dependencies, launches Postgres and observability
 containers, builds the API and runs the poller worker together with the API
-server. Stop both processes with `Ctrl+C`.
+server. On macOS Docker Desktop is started automatically if needed. Stop both
+processes with `Ctrl+C`.
 
 Manual steps if you prefer running each piece separately:
 
