@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class MetricsHypertable0010 implements MigrationInterface {
-  name = 'MetricsHypertable0010';
+export class MetricsHypertable1710000000010 implements MigrationInterface {
+  name = 'MetricsHypertable1710000000010';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
