@@ -186,11 +186,11 @@ salescaptain.io
 This spec should give Codex (or any engineer) enough clarity to scaffold repositories, generate boilerplate, and implement the core loops end-to-end.
 
 ## Development
-
 ### Requirements
 
 - Docker with Docker Compose installed.
 - Node.js 18+ (the script installs `pnpm` globally if missing).
+
 - On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
 
 For a single-command setup execute:
