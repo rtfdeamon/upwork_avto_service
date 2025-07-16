@@ -8,6 +8,8 @@ export class TenantSubscriber implements EntitySubscriberInterface {
     return Object;
   }
 
+  }
+
   beforeFind(event: any) {
     const store = tenantStorage.getStore();
     const userId = store?.userId;
