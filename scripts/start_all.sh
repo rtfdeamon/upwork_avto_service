@@ -3,6 +3,7 @@ set -e
 # fail if variables are undefined or a pipeline fails
 set -o pipefail
 set -u
+
 # Start full stack locally
 DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$DIR")"
@@ -36,6 +37,7 @@ if ! docker info >/dev/null 2>&1; then
     exit 1
   fi
 fi
+
 
 # Ensure Node.js is available
 if ! command -v node >/dev/null 2>&1; then
