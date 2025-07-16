@@ -10,6 +10,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
   app.use('/stripe/webhook', bodyParser.raw({ type: '*/*' }));
-  await app.listen(3000);
+  const port = parseInt(process.env.PORT || '3000', 10);
+  await app.listen(port);
 }
 bootstrap();
