@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Ruleset0003 implements MigrationInterface {
-  name = 'Ruleset0003'
+export class Ruleset1710000000003 implements MigrationInterface {
+  name = 'Ruleset1710000000003'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

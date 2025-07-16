@@ -5,4 +5,4 @@ COPY apps/api/package.json ./apps/api/package.json
 RUN corepack enable && pnpm install --frozen-lockfile --filter api...
 COPY apps/api ./apps/api
 RUN pnpm --filter api run build
-CMD ["node", "apps/api/dist/index.js"]
+CMD ["node", "apps/api/dist/main.js"]
