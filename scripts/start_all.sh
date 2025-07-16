@@ -45,7 +45,6 @@ if ! command -v node >/dev/null 2>&1; then
   exit 1
 fi
 
-
 # Ensure pnpm exists
 if ! command -v pnpm >/dev/null 2>&1; then
   echo "pnpm not found. Installing globally..." >&2

@@ -1,10 +1,11 @@
-import { DataSource, EntitySubscriberInterface, EventSubscriber, SelectQueryBuilder } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, SelectQueryBuilder } from 'typeorm';
 import { tenantStorage } from './tenant-context';
 
 @EventSubscriber()
 export class TenantSubscriber implements EntitySubscriberInterface {
-  constructor(dataSource: DataSource) {
-    dataSource.subscribers.push(this);
+
+  listenTo() {
+    return Object;
   }
 
   listenTo() {
