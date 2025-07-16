@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class ProposalFeedback0013 implements MigrationInterface {
-  name = 'ProposalFeedback0013';
+export class ProposalFeedback1710000000013 implements MigrationInterface {
+  name = 'ProposalFeedback1710000000013';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE TYPE "proposal_feedback_enum" AS ENUM('up','down')`);
