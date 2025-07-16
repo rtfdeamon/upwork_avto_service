@@ -17,10 +17,10 @@
     "smoke": "TS_NODE_PROJECT=tests/tsconfig.json ts-node tests/smoke/simulateJobs.spec.ts"
   },
   "devDependencies": {
+    "@aws-sdk/client-sqs": "^3.521.0",
     "eslint": "^8.57.0",
     "prettier": "^3.2.5",
-    "ts-node-dev": "^2.0.0",
     "ts-node": "^10.9.1",
-    "@aws-sdk/client-sqs": "^3.521.0"
+    "ts-node-dev": "^2.0.0"
   }
 }

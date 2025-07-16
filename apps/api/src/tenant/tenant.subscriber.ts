@@ -7,6 +7,10 @@ export class TenantSubscriber implements EntitySubscriberInterface {
     dataSource.subscribers.push(this);
   }
 
+  listenTo() {
+    return Object;
+  }
+
   beforeFind(event: any) {
     const store = tenantStorage.getStore();
     const userId = store?.userId;
