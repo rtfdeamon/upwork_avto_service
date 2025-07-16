@@ -8,8 +8,6 @@ export class TenantSubscriber implements EntitySubscriberInterface {
     return Object;
   }
 
-  listenTo() {
-    return Object;
   }
 
   beforeFind(event: any) {

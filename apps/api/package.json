@@ -1,9 +1,9 @@
 {
   "name": "api",
   "version": "0.1.0",
-  "main": "dist/index.js",
+  "main": "dist/main.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node dist/main.js",
     "migration:run": "ts-node ./src/migration-runner.ts",
     "test": "ts-node ./test/upwork-auth.e2e.ts",
     "build": "tsc"

@@ -63,7 +63,8 @@ fi
 pnpm --filter api run build
 
 # start API and worker in background
-node apps/api/dist/index.js &
+
+node apps/api/dist/main.js &
 API_PID=$!
 pnpm poller:dev &
 WORKER_PID=$!
