@@ -36,8 +36,13 @@ fi
 
 # Ensure pnpm exists
 if ! command -v pnpm >/dev/null 2>&1; then
-  echo "pnpm not found. Install pnpm before running." >&2
-  exit 1
+  echo "pnpm not found. Installing globally..." >&2
+  if command -v npm >/dev/null 2>&1; then
+    npm install -g pnpm >/dev/null 2>&1
+  else
+    echo "npm is not installed. Please install Node.js first." >&2
+    exit 1
+  fi
 fi
 
 # bootstrap dependencies
