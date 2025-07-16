@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Webhook0007 implements MigrationInterface {
-  name = 'Webhook0007'
+export class Webhook1710000000007 implements MigrationInterface {
+  name = 'Webhook1710000000007'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE TYPE "webhook_type_enum" AS ENUM('SLACK','TG')`);

@@ -1,6 +1,7 @@
 
 import { Body, Controller, Param, Post, UseGuards, Req, BadRequestException } from '@nestjs/common';
 import { Get, Query } from '@nestjs/common';
+import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ProposalsService } from './proposals.service';
 import { ProposalFeedback } from '../entities/proposal.entity';
@@ -15,7 +16,7 @@ export class ProposalsController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  list(@Query('status') status: string, @Req() req) {
+  list(@Query('status') status: string, @Req() req: Request) {
     return this.service.listForUser(req.user.id, status as any);
   }
 
@@ -30,7 +31,7 @@ export class ProposalsController {
 
   @Post(':id/send')
   @UseGuards(JwtAuthGuard)
-  async send(@Param('id') id: string, @Req() req) {
+  async send(@Param('id') id: string, @Req() req: Request) {
     const prop = await this.service.findOwned(id, req.user.id);
     if (!prop) throw new BadRequestException('Not found');
     if (prop.status !== 'DRAFT')
