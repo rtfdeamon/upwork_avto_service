@@ -6,7 +6,7 @@ AppDataSource.initialize()
     console.log('Migrations executed');
     return AppDataSource.destroy();
   })
-  .catch((err) => {
+  .catch((err: unknown) => {
     console.error(err);
     process.exit(1);
   });
