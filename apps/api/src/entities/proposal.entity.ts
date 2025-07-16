@@ -31,7 +31,7 @@ export class Proposal {
   jobId!: string;
 
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   jobTitle!: string | null;
 
   @Column('text')
