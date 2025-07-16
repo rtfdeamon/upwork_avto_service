@@ -1,4 +1,4 @@
-import { EntitySubscriberInterface, EventSubscriber, SelectQueryBuilder } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, SelectQueryBuilder, BeforeQueryEvent } from 'typeorm';
 import { tenantStorage } from './tenant-context';
 
 @EventSubscriber()
@@ -8,9 +8,7 @@ export class TenantSubscriber implements EntitySubscriberInterface {
     return Object;
   }
 
-  }
-
-  beforeFind(event: any) {
+  beforeQuery(event: BeforeQueryEvent<any>) {
     const store = tenantStorage.getStore();
     const userId = store?.userId;
     if (!userId) return;
