@@ -7,7 +7,7 @@ import { UpworkAuthController } from './upwork-auth.controller';
 import { ApiKey } from '../entities/api-key.entity';
 
 @Module({
-  imports: [HttpModule, ScheduleModule.forFeature(), TypeOrmModule.forFeature([ApiKey])],
+  imports: [HttpModule, ScheduleModule.forRoot(), TypeOrmModule.forFeature([ApiKey])],
   providers: [UpworkAuthService],
   controllers: [UpworkAuthController],
   exports: [UpworkAuthService],
