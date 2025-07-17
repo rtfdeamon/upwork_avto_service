@@ -4,13 +4,13 @@ export class ProposalColumns1710000000014 implements MigrationInterface {
   name = 'ProposalColumns1710000000014';
 
   public async up(q: QueryRunner): Promise<void> {
-    // 2.1 колонка status
+    // колонка status
     await q.query(`
       ALTER TABLE "proposal"
       ADD COLUMN IF NOT EXISTS "status" TEXT DEFAULT 'DRAFT'
     `);
 
-    // 2.2 безопасно добавляем FK (Postgres не поддерживает IF NOT EXISTS в ADD CONSTRAINT)
+    // безопасное добавление FK (Postgres не умеет IF NOT EXISTS в ADD CONSTRAINT)
     await q.query(`
       DO $$
       BEGIN

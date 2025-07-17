@@ -1,9 +1,9 @@
 name: CI-CD
-true:
+on:
   push:
     branches:
-    - main
-  pull_request: null
+      - main
+  pull_request:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,16 +14,16 @@ jobs:
       ECR_REPO_WORKER: upwork-worker
     steps:
     - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@v2
+    - uses: pnpm/action-setup@v3
       with:
-        version: 8
+        version: 10
     - uses: actions/setup-node@v4
       with:
         node-version: 18
         cache: pnpm
     - name: Approve build scripts
       run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
-    - run: pnpm install --frozen-lockfile
+    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
     - name: Run migrations
       run: pnpm --filter api run migration:run
     - run: pnpm lint && pnpm test
@@ -67,16 +67,16 @@ jobs:
           --health-timeout=5s --health-retries=5
     steps:
     - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@v2
+    - uses: pnpm/action-setup@v3
       with:
-        version: 8
+        version: 10
     - uses: actions/setup-node@v4
       with:
         node-version: 18
         cache: pnpm
     - name: Approve build scripts
       run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
-    - run: pnpm install --frozen-lockfile
+    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
     - name: Run migrations
       run: pnpm --filter api run migration:run
     - run: pnpm run test:e2e && pnpm run smoke | tee smoke.log
@@ -102,16 +102,16 @@ jobs:
       ECR_REPO_WORKER: upwork-worker
     steps:
     - uses: actions/checkout@v4
-    - uses: pnpm/action-setup@v2
+    - uses: pnpm/action-setup@v3
       with:
-        version: 8
+        version: 10
     - uses: actions/setup-node@v4
       with:
         node-version: 18
         cache: pnpm
     - name: Approve build scripts
       run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
-    - run: pnpm install --frozen-lockfile
+    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
     - name: Run migrations
       run: pnpm --filter api run migration:run
     - name: Terraform plan
