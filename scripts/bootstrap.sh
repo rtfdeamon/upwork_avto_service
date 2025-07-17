@@ -16,7 +16,6 @@ docker-compose up -d db prometheus tempo promtail grafana
 # run database migrations
 pnpm --filter api run migration:run
 
-
 # show helpful URLs
 
 PORT_VAR=${PORT:-4000}
