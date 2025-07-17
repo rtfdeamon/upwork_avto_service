@@ -23,7 +23,9 @@ jobs:
         cache: pnpm
     - name: Approve build scripts
       run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
-    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+    - run: |
+        PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+        pnpm run prepare
     - name: Run migrations
       run: pnpm --filter api run migration:run
     - run: pnpm lint && pnpm test
@@ -76,7 +78,9 @@ jobs:
         cache: pnpm
     - name: Approve build scripts
       run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
-    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+    - run: |
+        PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+        pnpm run prepare
     - name: Run migrations
       run: pnpm --filter api run migration:run
     - run: pnpm run test:e2e && pnpm run smoke | tee smoke.log
@@ -111,7 +115,9 @@ jobs:
         cache: pnpm
     - name: Approve build scripts
       run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
-    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+    - run: |
+        PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+        pnpm run prepare
     - name: Run migrations
       run: pnpm --filter api run migration:run
     - name: Terraform plan
