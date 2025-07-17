@@ -1,10 +1,10 @@
 import { AppDataSource } from './data-source';
 
 AppDataSource.initialize()
-  .then(() => AppDataSource.runMigrations())
-  .then(() => {
-    console.log('Migrations executed');
-    return AppDataSource.destroy();
+  .then(async () => {
+    await AppDataSource.runMigrations();
+    console.log('✅ Migrations finished');
+    await AppDataSource.destroy();
   })
   .catch((err: unknown) => {
     console.error(err);

@@ -1,10 +1,9 @@
 name: CI-CD
-
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,29 +13,36 @@ jobs:
       ECR_REPO_API: upwork-api
       ECR_REPO_WORKER: upwork-worker
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint && pnpm test
-      - name: Build API image
-        run: docker build -f apps/api/Dockerfile -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_API }}:latest .
-      - name: Build Worker image
-        run: docker build -f apps/worker/Dockerfile -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest .
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          region: ${{ env.AWS_REGION }}
-      - name: Push images
-        run: |
-          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_API }}:latest
-          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 10
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: pnpm
+    - name: Approve build scripts
+      run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
+    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+    - name: Run migrations
+      run: pnpm --filter api run migration:run
+    - run: pnpm lint && pnpm test
+    - name: Build API image
+      run: docker build -f apps/api/Dockerfile -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_API
+        }}:latest .
+    - name: Build Worker image
+      run: docker build -f apps/worker/Dockerfile -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER
+        }}:latest .
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v2
+      with:
+        region: ${{ env.AWS_REGION }}
+    - name: Push images
+      run: 'docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_API }}:latest
 
+        docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest
+
+        '
   smoke:
     needs: build
     runs-on: ubuntu-latest
@@ -48,40 +54,45 @@ jobs:
           POSTGRES_PASSWORD: upwork
           POSTGRES_DB: upwork
         ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=5
+        - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s
+          --health-retries=5
       localstack:
         image: localstack/localstack
         ports:
-          - 4566:4566
+        - 4566:4566
         env:
           SERVICES: sqs
-        options: >-
-          --health-cmd="curl -f http://localhost:4566/ || exit 1" --health-interval=10s --health-timeout=5s --health-retries=5
+        options: --health-cmd="curl -f http://localhost:4566/ || exit 1" --health-interval=10s
+          --health-timeout=5s --health-retries=5
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run test:e2e && pnpm run smoke | tee smoke.log
-      - uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage
-          if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
-        with:
-          name: smoke.log
-          path: smoke.log
-
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 10
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: pnpm
+    - name: Approve build scripts
+      run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
+    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+    - name: Run migrations
+      run: pnpm --filter api run migration:run
+    - run: pnpm run test:e2e && pnpm run smoke | tee smoke.log
+    - uses: actions/upload-artifact@v4
+      with:
+        name: coverage
+        path: coverage
+        if-no-files-found: ignore
+    - uses: actions/upload-artifact@v4
+      with:
+        name: smoke.log
+        path: smoke.log
   deploy:
-    needs: [build, smoke]
+    needs:
+    - build
+    - smoke
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -90,22 +101,32 @@ jobs:
       ECR_REPO_API: upwork-api
       ECR_REPO_WORKER: upwork-worker
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - name: Terraform plan
-        run: terraform -chdir=infra plan
-      - name: Terraform apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform -chdir=infra apply -auto-approve
-      - name: Update Lambda code
-        run: |
-          aws lambda update-function-code --function-name job-poller --image-uri ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest
-          aws lambda update-function-code --function-name activity-feed --image-uri ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest
-          aws lambda update-function-code --function-name api --image-uri ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_API }}:latest
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v3
+      with:
+        version: 10
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: pnpm
+    - name: Approve build scripts
+      run: 'echo ''{ "allowBuildScripts": true }'' > ~/.pnpmrc'
+    - run: PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+    - name: Run migrations
+      run: pnpm --filter api run migration:run
+    - name: Terraform plan
+      run: terraform -chdir=infra plan
+    - name: Terraform apply
+      if: github.ref == 'refs/heads/main'
+      run: terraform -chdir=infra apply -auto-approve
+    - name: Update Lambda code
+      run: 'aws lambda update-function-code --function-name job-poller --image-uri
+        ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest
+
+        aws lambda update-function-code --function-name activity-feed --image-uri
+        ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO_WORKER }}:latest
+
+        aws lambda update-function-code --function-name api --image-uri ${{ env.ECR_REGISTRY
+        }}/${{ env.ECR_REPO_API }}:latest
+
+        '
