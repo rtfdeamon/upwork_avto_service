@@ -186,6 +186,227 @@ salescaptain.io
 This spec should give Codex (or any engineer) enough clarity to scaffold repositories, generate boilerplate, and implement the core loops end-to-end.
 
 ## Development
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing).
+
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. On macOS Docker Desktop is started automatically if needed. Stop both
+processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. On macOS Docker Desktop is started automatically if needed. Stop both
+processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. On macOS Docker Desktop is started automatically if needed. Stop both
+processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. On macOS Docker Desktop is started automatically if needed. Stop both
+processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. On macOS Docker Desktop is started automatically if needed. Stop both
+processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server. On macOS Docker Desktop is started automatically if needed. Stop both
+processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server on port `4000`. On macOS Docker Desktop is started automatically if
+needed. Stop both processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+The API port defaults to `4000`; override it with `PORT=8080 ./scripts/start_all.sh` if needed.
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server on port `4000`. On macOS Docker Desktop is started automatically if
+needed. Stop both processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+The API port defaults to `4000`; override it with `PORT=8080 ./scripts/start_all.sh` if needed.
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server on port `4000`. On macOS Docker Desktop is started automatically if
+needed. Stop both processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+The API port defaults to `4000`; override it with `PORT=8080 ./scripts/start_all.sh` if needed. If migrations changed, remove the old Postgres volume by setting `RESET_DB=1`:
+
+```bash
+RESET_DB=1 ./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server on port `4000`. On macOS Docker Desktop is started automatically if
+needed. Stop both processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
+
+### Requirements
+
+- Docker with Docker Compose installed.
+- Node.js 18+ (the script installs `pnpm` globally if missing). Install from <https://nodejs.org/> or via nvm.
+- On macOS the helper script tries to start Docker Desktop automatically if the daemon isn't running.
+
+For a single-command setup execute:
+
+```bash
+./scripts/start_all.sh
+```
+The API port defaults to `4000`; override it with `PORT=8080 ./scripts/start_all.sh` if needed. If migrations changed, remove the old Postgres volume by setting `RESET_DB=1`:
+
+```bash
+RESET_DB=1 ./scripts/start_all.sh
+```
+
+The helper script installs dependencies, launches Postgres and observability
+containers, builds the API and runs the poller worker together with the API
+server on port `4000`. On macOS Docker Desktop is started automatically if
+needed. Stop both processes with `Ctrl+C`.
+
+Manual steps if you prefer running each piece separately:
 
 ### Requirements
 

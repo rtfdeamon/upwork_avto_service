@@ -67,6 +67,7 @@ pnpm --filter api run build
 
 # start API and worker in background
 PORT=${PORT:-4000} node apps/api/dist/main.js &
+
 API_PID=$!
 pnpm poller:dev &
 WORKER_PID=$!
