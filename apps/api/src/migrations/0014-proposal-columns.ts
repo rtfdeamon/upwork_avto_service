@@ -4,7 +4,14 @@ export class ProposalColumns1710000000014 implements MigrationInterface {
   name = 'ProposalColumns1710000000014';
 
   public async up(q: QueryRunner): Promise<void> {
-    // колонка status
+    /* 0) гарантируем, что колонка apiKeyId есть
+       (новые базы создаются без неё, старая миграция могла не пройти) */
+    await q.query(`
+      ALTER TABLE "proposal"
+      ADD COLUMN IF NOT EXISTS "apiKeyId" uuid
+    `);
+
+    // 1) колонка status
     await q.query(`
       ALTER TABLE "proposal"
       ADD COLUMN IF NOT EXISTS "status" TEXT DEFAULT 'DRAFT'
