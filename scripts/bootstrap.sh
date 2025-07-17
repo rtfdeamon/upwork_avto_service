@@ -8,7 +8,8 @@ ROOT="$(dirname "$DIR")"
 cd "$ROOT"
 
 # install node dependencies
-pnpm run install:full
+PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile
+pnpm run prepare          # approve once, без рекурсии
 
 # start Postgres and observability stack
 docker-compose up -d db prometheus tempo promtail grafana
