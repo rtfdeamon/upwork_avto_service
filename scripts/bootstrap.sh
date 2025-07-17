@@ -17,6 +17,7 @@ docker-compose up -d db prometheus tempo promtail grafana
 pnpm --filter api run migration:run
 
 # show helpful URLs
+
 PORT_VAR=${PORT:-4000}
 echo "Environment ready. API: http://localhost:$PORT_VAR"
 echo "Grafana: http://localhost:3000"
