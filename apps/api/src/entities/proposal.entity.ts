@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { ApiKey } from './api-key.entity';
@@ -40,8 +41,12 @@ export class Proposal {
   @Column({ type: 'enum', enum: ProposalStatus, default: ProposalStatus.DRAFT })
   status!: ProposalStatus;
 
-  @ManyToOne(() => ApiKey, { nullable: true, onDelete: 'SET NULL' })
-  apiKey!: ApiKey | null;
+  @Column({ nullable: true })
+  apiKeyId!: string | null;
+
+  @ManyToOne(() => ApiKey, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'apiKeyId' })
+  apiKey?: ApiKey;
 
   @Column({ type: 'timestamptz', nullable: true })
   sentAt!: Date | null;
