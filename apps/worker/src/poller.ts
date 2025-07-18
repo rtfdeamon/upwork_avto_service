@@ -7,7 +7,7 @@
   }
 })();
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { AppDataSource } from './data-source';
 /* ApiKey entity объявлен в API-приложении.
    В монорепо достаточно сослаться на исходный файл: */
 import { ApiKey } from '../../api/src/entities/api-key.entity';
@@ -17,15 +17,7 @@ import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import Redis from 'ioredis';
 import { log, error } from './logger';
 
-const dataSource = new DataSource({
-  type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  username: process.env.DB_USER || 'upwork',
-  password: process.env.DB_PASS || 'upwork',
-  database: process.env.DB_NAME || 'upwork',
-  entities: [ApiKey, User],
-});
+const dataSource = AppDataSource;
 
 const sqs = new SQSClient({});
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
