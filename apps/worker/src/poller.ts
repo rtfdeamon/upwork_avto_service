@@ -1,4 +1,9 @@
-import './tracing';
+// Load tracing if available; ignore if the module is missing
+try {
+  require('./tracing');
+} catch {
+  /* noop */
+}
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { ApiKey } from './entities/api-key.entity';
