@@ -1,9 +1,11 @@
 /* tracing.ts пока необязателен; заглушка, чтобы не падать */
-try {
-  await import('./tracing');
-} catch {
-  /* noop */
-}
+(async () => {
+  try {
+    await import('./tracing');
+  } catch {
+    /* noop */
+  }
+})();
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 /* ApiKey entity объявлен в API-приложении.
