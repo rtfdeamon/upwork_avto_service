@@ -4,13 +4,19 @@ export class ProposalColumns1710000000014 implements MigrationInterface {
   name = 'ProposalColumns1710000000014';
 
   public async up(q: QueryRunner): Promise<void> {
-    // колонка status
+    /* 0. гарантируем наличие apiKeyId */
+    await q.query(`
+      ALTER TABLE "proposal"
+      ADD COLUMN IF NOT EXISTS "apiKeyId" uuid
+    `);
+
+    /* 1. добавляем status */
     await q.query(`
       ALTER TABLE "proposal"
       ADD COLUMN IF NOT EXISTS "status" TEXT DEFAULT 'DRAFT'
     `);
 
-    // безопасное добавление FK (Postgres не умеет IF NOT EXISTS в ADD CONSTRAINT)
+    /* 2. создаём FK, если ещё нет */
     await q.query(`
       DO $$
       BEGIN
@@ -31,6 +37,7 @@ export class ProposalColumns1710000000014 implements MigrationInterface {
     await q.query(`
       ALTER TABLE "proposal" DROP CONSTRAINT IF EXISTS "FK_proposal_apiKey";
       ALTER TABLE "proposal" DROP COLUMN IF EXISTS "status";
+      ALTER TABLE "proposal" DROP COLUMN IF EXISTS "apiKeyId";
     `);
   }
 }

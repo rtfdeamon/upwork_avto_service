@@ -11,7 +11,7 @@
     "next": "14.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "next-auth": "4.22.1",
+    "next-auth": "4.24.5",
     "swr": "2.2.3",
     "@tanstack/react-charts": "workspace:*",
     "stripe": "^12.0.0"

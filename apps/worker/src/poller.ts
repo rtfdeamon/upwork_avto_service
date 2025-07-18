@@ -1,7 +1,14 @@
-import './tracing';
+/* tracing.ts пока необязателен; заглушка, чтобы не падать */
+try {
+  await import('./tracing');
+} catch {
+  /* noop */
+}
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { ApiKey } from './entities/api-key.entity';
+/* ApiKey entity объявлен в API-приложении.
+   В монорепо достаточно сослаться на исходный файл: */
+import { ApiKey } from '../../api/src/entities/api-key.entity.ts';
 import { User, SubscriptionStatus } from './entities/user.entity';
 import { searchJobs } from './lib/upwork';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
