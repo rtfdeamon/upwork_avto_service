@@ -8,7 +8,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 /* ApiKey entity объявлен в API-приложении.
    В монорепо достаточно сослаться на исходный файл: */
-import { ApiKey } from '../../api/src/entities/api-key.entity.ts';
+import { ApiKey } from '../../api/src/entities/api-key.entity';
 import { User, SubscriptionStatus } from './entities/user.entity';
 import { searchJobs } from './lib/upwork';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
