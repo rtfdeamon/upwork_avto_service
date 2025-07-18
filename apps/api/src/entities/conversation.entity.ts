@@ -1,5 +1,6 @@
-import { Entity, PrimaryColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
+import { Proposal } from './proposal.entity';
 
 @Entity()
 export class Conversation {
@@ -8,6 +9,13 @@ export class Conversation {
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user!: User;
+
+  @Column()
+  proposalId!: string;
+
+  @ManyToOne(() => Proposal, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'proposalId' })
+  proposal!: Proposal;
 
   @Column()
   jobId!: string;

@@ -17,7 +17,14 @@
     "smoke": "TS_NODE_PROJECT=tests/tsconfig.json ts-node tests/smoke/simulateJobs.spec.ts",
     "clean": "rm -rf node_modules && pnpm store prune",
     "install:full": "PNPM_ENABLE_PRE_POST_INSTALL_SCRIPTS=1 pnpm install --fix-lockfile",
-    "postinstall": "pnpm -r exec -- pnpm install"
+    "prepare": "pnpm -r exec -- pnpm approve-builds || true"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "next"
+      ]
+    }
   },
   "devDependencies": {
     "@aws-sdk/client-sqs": "^3.521.0",
