@@ -35,7 +35,6 @@ export class ProposalColumns1710000000014 implements MigrationInterface {
 
   public async down(q: QueryRunner): Promise<void> {
     await q.query(`
-      ALTER TABLE "proposal" DROP CONSTRAINT IF EXISTS "FK_proposal_apiKey";
       ALTER TABLE "proposal" DROP COLUMN IF EXISTS "status";
       ALTER TABLE "proposal" DROP COLUMN IF EXISTS "apiKeyId";
     `);
