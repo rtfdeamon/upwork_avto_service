@@ -4,7 +4,9 @@ import { AppDataSource } from './data-source';
 import { ApiKey } from './entities/api-key.entity';
 import { Proposal, ProposalStatus } from './entities/proposal.entity';
 import { SubscriptionStatus } from './entities/user.entity';
-import { generateDraft } from './lib/openai';
+import { createOpenAIClient } from './ai/openaiClient';
+
+const openaiClient = createOpenAIClient();
 
 import { submitProposal } from './lib/upwork';
 import { log, error } from './logger';
@@ -27,7 +29,7 @@ export const handler: SQSHandler = async (event) => {
     });
     if (!key) continue;
     if (key.user.subscription !== SubscriptionStatus.ACTIVE) continue;
-    const draftText = await generateDraft('profile', payload.jobJson, []);
+    const draftText = await openaiClient.generateDraft('profile', payload.jobJson, []);
     const proposal = propRepo.create({
       user: key.user,
 

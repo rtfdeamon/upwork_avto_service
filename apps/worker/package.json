@@ -6,7 +6,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "poller:dev": "ts-node-dev src/poller.ts",
-    "activity:dev": "ts-node-dev src/activity-feed.ts"
+    "activity:dev": "ts-node-dev src/activity-feed.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "axios": "^1.6.7",
@@ -17,6 +18,7 @@
     "reflect-metadata": "^0.1.13",
     "json-logic-js": "^2.0.2",
     "openai": "^4.40.0",
+    "quick-lru": "^7.0.1",
     "@opentelemetry/sdk-node": "^0.203.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.203.0",
     "@opentelemetry/instrumentation-http": "^0.56.0",
@@ -26,6 +28,7 @@
     "@types/aws-lambda": "^8.10.119",
     "@types/node": "^24.0.13",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
   }
 }
