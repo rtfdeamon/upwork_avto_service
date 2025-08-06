@@ -2,10 +2,21 @@ import { OpenAI } from 'openai';
 import type { Redis } from 'ioredis';
 import QuickLRU from 'quick-lru';
 import { createHash } from 'crypto';
+import { encoding_for_model as encodingForModel, type TiktokenModel } from '@dqbd/tiktoken';
+import axios from 'axios';
 import { log } from '../logger';
+import { createPrompt } from './prompt/createPrompt';
 
-export class OpenAITransientError extends Error {}
-export class OpenAIPermanentError extends Error {}
+export class OpenAITransientError extends Error {
+  constructor(message = 'transient') {
+    super(message);
+  }
+}
+export class OpenAIPermanentError extends Error {
+  constructor(message = 'permanent') {
+    super(message);
+  }
+}
 
 interface CreateClientOptions {
   apiKey?: string;
@@ -16,8 +27,18 @@ interface CreateClientOptions {
 
 const TOKENS_PER_MINUTE = Number(process.env.OPENAI_TPM || 200000);
 
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4);
+const encoders = new Map<string, ReturnType<typeof encodingForModel>>();
+function estimateTokens(text: string, model = 'gpt-4o') {
+  const m = model as TiktokenModel;
+  const enc =
+    encoders.get(m) ??
+    (() => {
+      const e = encodingForModel(m);
+      encoders.set(m, e);
+      return e;
+    })();
+  return enc.encode(text).length;
+
 }
 
 export function createOpenAIClient(opts: CreateClientOptions = {}) {
@@ -40,50 +61,103 @@ export function createOpenAIClient(opts: CreateClientOptions = {}) {
     }
   }
 
-  async function runCompletion(prompt: string, params: { model: string; max_tokens?: number }): Promise<string> {
-    const hash = createHash('sha256').update(prompt + params.model).digest('hex');
-    let cached = cache.get(hash);
-    if (!cached && redis) {
+  interface RunOpts {
+    model: string;
+    max_tokens?: number;
+  }
+
+  async function runCompletion(prompt: string, opts: RunOpts): Promise<string> {
+    const hash = createHash('sha256').update(prompt + opts.model).digest('hex');
+    let cached: string | null | undefined = cache.get(hash) ?? null;
+    if (cached === null && redis) {
       cached = await redis.get(hash);
     }
-    if (cached) {
+    if (cached !== null && cached !== undefined) {
       return cached;
     }
 
-    await checkRateLimit(estimateTokens(prompt) + (params.max_tokens ?? 0));
+    const tokens = estimateTokens(prompt, opts.model);
+    await checkRateLimit(tokens + (opts.max_tokens ?? 0));
 
-    const response = await withRetry(async () => {
-      try {
-        return await client.chat.completions.create({
-          model: params.model,
-          messages: [
-            { role: 'system', content: 'You write short Upwork proposals.' },
-            { role: 'user', content: prompt },
-          ],
-          max_tokens: params.max_tokens,
-        });
-      } catch (e: any) {
-        const status = e?.status ?? e?.response?.status;
-        if (status === 429 || (status && status >= 500)) {
-          throw new OpenAITransientError(e.message);
+    try {
+      const stream = await withRetry(
+        () =>
+          client.chat.completions.create({
+            ...opts,
+            stream: true,
+            messages: [{ role: 'user', content: prompt }],
+            functions: [
+              {
+                name: 'createProposal',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    headline: { type: 'string' },
+                    body: { type: 'string' },
+                    callToAction: { type: 'string' },
+                  },
+                  required: ['headline', 'body'],
+                },
+              },
+            ],
+          }),
+        { tries: 5, factor: 2 },
+      );
+
+      let args = '';
+      for await (const part of stream as any) {
+        const delta = part.choices?.[0]?.delta;
+        if (delta?.function_call?.arguments) {
+          args += delta.function_call.arguments;
         }
-        throw new OpenAIPermanentError(e.message);
       }
-    });
 
-    const text = response.choices[0].message.content || '';
-    cache.set(hash, text);
-    if (redis) {
-      await redis.set(hash, text, 'EX', 60 * 60);
+      let text = args;
+      try {
+        const obj = JSON.parse(args);
+        text = [obj.headline, obj.body, obj.callToAction].filter(Boolean).join('\n\n');
+      } catch {}
+
+      cache.set(hash, text);
+      if (redis) {
+        await redis.set(hash, text, 'EX', 60 * 60);
+      }
+      return text;
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response) {
+        const { status, data } = err.response;
+        if (status === 429 && data?.error?.code === 'rate_limit_exceeded') {
+          throw new OpenAITransientError('rate-limit');
+        }
+        if (status === 429 || status === 400) {
+          throw new OpenAIPermanentError('policy');
+        }
+        if (status >= 500) throw new OpenAITransientError('5xx');
+        throw new OpenAIPermanentError();
+      }
+      throw err;
     }
-    return text;
+
   }
 
   return {
     async generateDraft(profile: string, jobJson: any, cases: string[]): Promise<string> {
-      const prompt = `Write a brief proposal based on the job post and profile. Job: ${JSON.stringify(jobJson)} Profile: ${profile}\nCases: ${cases.join('\n')}`;
+      const prompt = createPrompt(profile, jobJson, cases);
       log('generating draft');
-      return runCompletion(prompt, { model: 'gpt-4o', max_tokens: 200 });
+
+      const primary = process.env.OPENAI_MODEL_PRIMARY || 'gpt-4o';
+      const fallbacks = (process.env.OPENAI_MODEL_FALLBACK || 'gpt-4o-mini,gpt-3.5-turbo-0125').split(',');
+      const models = [primary, ...fallbacks];
+
+      for (const model of models) {
+        try {
+          return await runCompletion(prompt, { model, max_tokens: 200 });
+        } catch (e) {
+          if (!(e instanceof OpenAITransientError)) throw e;
+          log(`model ${model} failed, trying fallback`);
+        }
+      }
+      throw new OpenAITransientError('all models failed');
     },
   };
 }

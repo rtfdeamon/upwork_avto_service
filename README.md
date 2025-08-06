@@ -1,6 +1,17 @@
 Below is a structured ― and fairly exhaustive ― technical specification you can hand to an OpenAI Codex (or any senior engineer) to build a “never-sleep” AI auto-responder SaaS for Upwork similar to uneversleep.com.
 Everything is organised so the dev team can lift sections straight into tickets or a PRD.
 
+## Quick start
+
+### ⚙️  Квоты и модели
+
+| ENV                     | Пример                | Описание                      |
+|-------------------------|-----------------------|-------------------------------|
+| `OPENAI_API_KEY`        | `sk‑…`                | выдаётся в UI OpenAI          |
+| `OPENAI_ORG_ID`         | `org_abc123`          | опционально                   |
+| `OPENAI_MODEL_PRIMARY`  | `gpt‑4o`              | основной                      |
+| `OPENAI_MODEL_FALLBACK` | `gpt‑4o-mini,gpt-3.5` | через запятую, порядок важен  |
+
 Executive summary
 We will build a cloud-hosted SaaS that (1) continuously watches new Upwork job posts through the official GraphQL API, (2) filters them against user-defined criteria, (3) drafts personalised proposals with an LLM fine-tuned on the user’s best past messages, and (4) submits those proposals within minutes, dramatically outperforming manual bidding. Early adopters of the reference product report 20-35 calls booked and 2+ closed deals per month with zero manual labour 
 LinkedIn
