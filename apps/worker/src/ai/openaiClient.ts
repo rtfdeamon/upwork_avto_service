@@ -38,6 +38,7 @@ function estimateTokens(text: string, model = 'gpt-4o') {
       return e;
     })();
   return enc.encode(text).length;
+
 }
 
 export function createOpenAIClient(opts: CreateClientOptions = {}) {
@@ -136,6 +137,7 @@ export function createOpenAIClient(opts: CreateClientOptions = {}) {
       }
       throw err;
     }
+
   }
 
   return {

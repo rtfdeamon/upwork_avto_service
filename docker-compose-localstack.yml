@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: upwork
       POSTGRES_DB: upwork
     ports:
-      - '5433:5432'
+      - '5433:5434'
   redis:
     image: redis:7
     ports:

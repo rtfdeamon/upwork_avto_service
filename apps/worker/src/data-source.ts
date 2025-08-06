@@ -10,7 +10,7 @@ import { Webhook } from './entities/webhook.entity';
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
+  port: parseInt(process.env.DB_PORT || '5434'),
   username: process.env.DB_USER || 'upwork',
   password: process.env.DB_PASS || 'upwork',
   database: process.env.DB_NAME || 'upwork',
