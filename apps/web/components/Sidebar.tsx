@@ -17,6 +17,9 @@ export default function Sidebar() {
           <Link href="/dashboard/drafts">Drafts</Link>
         </li>
         <li>
+          <Link href="/dashboard/upwork">Upwork</Link>
+        </li>
+        <li>
           <Link href="/dashboard/conversations">Conversations</Link>
         </li>
         <li>

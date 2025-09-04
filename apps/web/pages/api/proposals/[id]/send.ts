@@ -5,7 +5,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') return res.status(405).end();
   const session = await getSession({ req });
   if (!session?.accessToken) return res.status(401).end();
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/proposals/${req.query.id}/send`;
+  const base = process.env.API_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = `${base}/proposals/${req.query.id}/send`;
   const r = await fetch(apiUrl, {
     method: 'POST',
     headers: { Authorization: `Bearer ${session.accessToken}` },

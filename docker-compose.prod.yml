@@ -1,0 +1,35 @@
+services:
+  web:
+    environment:
+      - NEXT_PUBLIC_API_URL=/api
+      - API_INTERNAL_URL=http://py-api:4000
+    ports: []
+
+  py-api:
+    ports: []
+
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      - web
+      - py-api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/nginx:/etc/nginx/conf.d:ro
+      - certbot-webroot:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - certbot-webroot:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    entrypoint: ["sh","-c"]
+    # Example: acquire certs (replace domains/email)
+    command: "sleep infinity"
+
+volumes:
+  certbot-webroot:
+  letsencrypt:

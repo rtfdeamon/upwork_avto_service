@@ -1,203 +1,96 @@
-Below is a structured ― and fairly exhaustive ― technical specification you can hand to an OpenAI Codex (or any senior engineer) to build a “never-sleep” AI auto-responder SaaS for Upwork similar to uneversleep.com.
-Everything is organised so the dev team can lift sections straight into tickets or a PRD.
+## Обзор
 
-## Quick start
+Monorepo c тремя приложениями и инфраструктурой:
+- `apps/api` — NestJS REST API (аутентификация, rulesets, метрики, биллинг Stripe, отправка предложений на Upwork).
+- `apps/worker` — воркеры (поллинг вакансий, генерация черновиков через OpenAI, обработка событий/активности).
+- `apps/web` — Next.js дашборд.
+- `infra` — Terraform/Terragrunt для AWS (SQS, Lambda/Fargate, RDS, мониторинг).
 
-### ⚙️  Квоты и модели
+Наблюдаемость: OpenTelemetry + Prometheus + Grafana (локально поднимается через Docker Compose).
 
-| ENV                     | Пример                | Описание                      |
-|-------------------------|-----------------------|-------------------------------|
-| `OPENAI_API_KEY`        | `sk‑…`                | выдаётся в UI OpenAI          |
-| `OPENAI_ORG_ID`         | `org_abc123`          | опционально                   |
-| `OPENAI_MODEL_PRIMARY`  | `gpt‑4o`              | основной                      |
-| `OPENAI_MODEL_FALLBACK` | `gpt‑4o-mini,gpt-3.5` | через запятую, порядок важен  |
+Список основных endpoint’ов и архитектурная схема — см. `docs/API.md` и `docs/ARCHITECTURE.md`.
 
-Executive summary
-We will build a cloud-hosted SaaS that (1) continuously watches new Upwork job posts through the official GraphQL API, (2) filters them against user-defined criteria, (3) drafts personalised proposals with an LLM fine-tuned on the user’s best past messages, and (4) submits those proposals within minutes, dramatically outperforming manual bidding. Early adopters of the reference product report 20-35 calls booked and 2+ closed deals per month with zero manual labour 
-LinkedIn
-LinkedIn
-. Our version will offer the same core flow while adding multi-account support, granular analytics, and a plug-and-play webhook/ Zapier layer for agencies.
+## Быстрый старт (локально)
 
-1. Goals & KPIs
-Goal	KPI	Target
-Time-to-proposal	Median latency from job-posted → proposal-sent	< 3 min
-Win-rate uplift	Calls booked per 100 proposals	≥ 4 %
-ROI for users	Pipeline $ per $ spent on connects + subscription	≥ 100 % by month 2
-System uptime	Availability of core worker + API	≥ 99.5 %
+Предустановки:
+- Docker/Docker Compose, Node.js 18+, pnpm.
 
-2. Functional requirements
-2.1 Job discovery
-Polling worker hits the Upwork GraphQL JobSearch query every 60 s per user 
-Upwork
-.
+1) Заполните `.env` на основе `.env.example`.
+2) Запустите полный локальный стек одной командой:
 
-OAuth 2.0 flow with refresh tokens (Upwork rotates keys annually – see screenshot) must be abstracted in a auth micro-service.
+```
+./scripts/start_all.sh
+```
 
-Rate-limit compliance: throttle to 100 calls/10 min per key.
+Скрипт:
+- установит зависимости, поднимет Postgres и мониторинг,
+- применит миграции,
+- соберёт и запустит API, запустит dev-воркеры.
 
-2.2 Validation & filtering
-Users create “ideal-job rulesets” (tech stack keywords, budget ranges, client spend, etc.).
+По умолчанию:
+- API слушает `http://localhost:4000` (переопределить: `PORT=8080 ./scripts/start_all.sh`),
+- Postgres доступен на хосте по `localhost:5434` (настроено в `docker-compose.yml`).
 
-Rules engine: JSON logic (AND/OR) compiled to SQL for persistence.
+Полезно:
+- Сбросить БД-том: `RESET_DB=1 ./scripts/start_all.sh`
+- Grafana: `http://localhost:3000` (логин/пароль по умолчанию)
 
-2.3 Proposal generation
-Fine-tune or RAG prompt on:
+Подробные пошаговые инструкции и отладка — в `docs/LOCAL_DEV.md`.
 
-User’s profile / portfolio.
+## Docker (Python API/Worker)
 
-Best historical messages imported via Upwork “rooms & messages” scope 
-LinkedIn
-.
+Для локальной разработки на Python используйте docker-compose:
 
-Use OpenAI / Azure OpenAI GPT-4o with structured prompt: { job_post, profile_summary, case_studies[] } → proposal.
+```
+docker-compose up -d db prometheus tempo promtail grafana redis localstack py-api
+# при необходимости запуск воркера:
+docker-compose up -d py-worker
+```
 
-Streaming completion to UI for transparency.
+By default:
+- `py-api` слушает `http://localhost:4000` и использует `UPWORK_MOCK=1`.
+- `py-worker` создаёт очередь SQS, если `JOBS_QUEUE_URL` не задан (имя из `JOBS_QUEUE`).
 
-2.4 Auto-submission
-Call CreateProposal mutation with connects budget logic (don’t boost unless latency > 10 min) 
-LinkedIn
-.
+## Переменные окружения (ключевые)
 
-If boost is required, increment connects cost and log.
+- `OPENAI_API_KEY` — ключ OpenAI.
+- `OPENAI_ORG_ID` — (опционально) организация OpenAI.
+- `OPENAI_MODEL_PRIMARY` — основной модельный идентификатор (напр. `gpt-4o`).
+- `OPENAI_MODEL_FALLBACK` — список fallback-моделей через запятую.
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME` — настройки Postgres.
+- `JWT_SECRET` — секрет для JWT (обязательно переопределить в проде!).
+- `UPWORK_CLIENT_ID`, `UPWORK_CLIENT_SECRET`, `UPWORK_REDIRECT` — OAuth для Upwork.
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `PRICE_ID` — Stripe.
+- `JOBS_QUEUE_URL`, `PROPOSALS_QUEUE_URL` — URL очередей SQS (для воркера).
+- `REDIS_URL` — Redis для дедупликации/лимитов (воркер).
 
-2.5 Conversation monitor
-Listen to ActivityFeed endpoint to detect client replies; trigger Slack / Telegram webhook.
+Полный список и примеры — в `.env.example` и README отдельных пакетов в `apps/*`.
 
-2.6 Dashboard & analytics
-Metrics: proposals/day, open-rate, reply-rate, calls booked, contracts, ROI.
+## Тесты
 
-Time-series stored in Postgres + TimescaleDB; visualised in React/Next.js chart widgets.
+На текущем этапе e2e-тесты для Node-версии удалены. Для Python API/Worker планируются отдельные тесты (pytest/Alembic), при необходимости добавлю.
 
-2.7 Multi-account & team mode
-Agencies attach multiple Upwork keys; each proposal tagged with account alias.
+## Деплой
 
-Role-based access: owner, SDR, observer.
+См. `docs/deploy.md` (Terragrunt применяет инфраструктуру, затем `scripts/post_deploy.sh` докручивает EventBridge и DLQ; описаны сервисы Fargate/Lambda, RDS и мониторинг).
 
-2.8 Notifications & integrations
-Webhooks, Zapier REST hooks, native Slack & Telegram bots (same as uneversleep tutorial 
-U Never Sleep
-).
+## Безопасность и замечания
 
-3. Non-functional requirements
-Area	Spec
-Performance	Worker concurrency auto-scales on AWS Fargate; target < 500 ms cold-start.
-Security	Encrypt secrets in AWS Secrets Manager; SOC 2 controls.
-Compliance	Store only proposal metadata, never full job text, for Upwork ToS compliance 
-Make Community
-.
-Reliability	At-least-once job processing; idempotent submission guard (jobId + userId unique).
-Observability	OpenTelemetry traces, Prometheus metrics, Grafana dashboards.
+- Убедитесь, что `JWT_SECRET` задан и не равен значению по умолчанию.
+- Для интеграции с Upwork можно использовать `UPWORK_MOCK=1` в локальной среде, чтобы не делать реальные запросы.
+- Rate limiting OpenAI реализован в воркере через Redis (см. `OPENAI_TPM`).
 
-4. Technology stack
-Layer	Choice	Rationale
-Backend	TypeScript + NestJS	Decorators, DI, easy GraphQL client
-Job worker	Node18 on AWS Lambda / Fargate	Burstable & cost-efficient
-Front-end	Next.js 14 (T3 stack)	SSR dashboard, easy auth
-DB	Postgres 16 + TimescaleDB	Mixed relational + time-series
-Queue	AWS SQS (FIFO)	Exactly-once semantics
-AI	OpenAI GPT-4o via SDK	Best proposal quality
-CI/CD	GitHub Actions → AWS CodeDeploy	Zero-downtime
-Infra as Code	Terraform + Terragrunt	Multi-env
+## Структура репозитория
 
-5. Data model (simplified)
-mermaid
-Копировать
-Редактировать
-erDiagram
-  users ||--o{ api_keys : owns
-  users ||--o{ portfolios : has
-  api_keys ||--o{ job_search_tasks : triggers
-  job_posts ||--o{ proposals : responded
-  proposals ||--|| conversations : starts
-job_posts(jobId, title, skills[], budget, client_info, fetched_at)
+- `apps/api` — NestJS API, контроллеры: `auth`, `rulesets`, `metrics`, `proposals`, `webhooks`, `members`, `upwork-auth`.
+- `apps/worker` — поллинг вакансий, генерация и запись черновиков предложений через OpenAI, интеграция с SQS/Redis.
+- `apps/web` — Next.js дашборд с простыми графиками и страницами `/dashboard/*`.
+- `infra` — Terraform/Terragrunt модули (VPC, RDS, SQS, Lambdas/Fargate, ALB и т.д.), мониторинг.
+- `docs` — дополнительная документация (архитектура, локальная разработка, деплой, API).
 
-proposals(propId, jobId, userId, connects_used, status, llm_version, sent_at)
+---
 
-6. External API design
-Method	Path	Description
-POST /v1/rulesets	create/modify validation rules.	
-POST /v1/proposals/manual	generate & preview proposal without sending.	
-GET /v1/metrics/summary	ROI & funnel stats.	
-POST /v1/webhooks	register 3rd-party callback URLs.	
-
-Auth: JWT access tokens issued by our Auth0 tenant.
-
-7. AI prompt schema (pseudo-code)
-text
-Копировать
-Редактировать
-SYSTEM: You are an elite Upwork sales rep...
-USER: {job_json}
-TOOLS:
-  - portfolio: {summary, cases}
-  - profile: {headline, skills}
-INSTRUCTIONS:
-  1. Address the client by name if available.
-  2. Mirror their key requirement keywords in first 2 sentences.
-  3. Insert exactly 2 bullet points of relevant case studies.
-  4. Close with personalised question + CTA for 15-min call.
-Track prompt+completion tokens for cost reporting.
-
-8. Deployment pipeline
-dev → staging → prod environments.
-
-PR merges run tests, build Docker images, push to ECR.
-
-Terraform plan & apply gated by manual approval.
-
-Blue/green Lambda alias shift.
-
-9. Milestones & timeline (90 days)
-Day	Deliverable
-0-10	Upwork OAuth service + Postgres schema.
-11-25	Job polling worker + rules engine.
-26-40	LLM proposal generator (MVP prompt).
-41-55	Auto-submission & duplicate guards.
-56-70	Dashboard UI + metrics API.
-71-80	Team accounts, billing (Stripe).
-81-90	Security audit, load test, launch.
-
-10. Risks & mitigations
-Risk	Mitigation
-Upwork API policy changes / bans	Respect rate limits, add human-in-the-loop mode, rapid key rotation.
-Proposal quality drifts	Continuous RLHF loop: user thumbs-up/down stored → fine-tune monthly.
-Legal (ToS)	Store minimal data, optional proxy mode where proposal is returned to user browser for final send.
-
-Key references
-Upwork official GraphQL docs (auth, JobSearch, CreateProposal) 
-Upwork
-
-Case-study post on 35 calls, 2 closed deals (workflow outline) 
-LinkedIn
-
-Client testimonial: 20 leads, 2 contracts in 1 month 
-LinkedIn
-
-Upwork API community thread (OAuth tips) 
-Make Community
-
-uneversleep webhook setup tutorial (notifications) 
-U Never Sleep
-
-LinkedIn founder post explaining validation → LLM → send pipeline 
-LinkedIn
-
-Reddit n8n automation discussion (precedent for open-source workflows) 
-Реддит
-
-n8n workflow best practices for robust automations 
-Реддит
-
-OpenTelemetry & Prometheus patterns for Node services (generic but industry standard) 
-Upwork
-
-TimescaleDB time-series suitability for SaaS metrics 
-salescaptain.io
-
-This spec should give Codex (or any engineer) enough clarity to scaffold repositories, generate boilerplate, and implement the core loops end-to-end.
-
-## Development
-### Requirements
+Старый секционный «спек» перенесён и упрощён в `docs/ARCHITECTURE.md` и `docs/API.md`.
 
 - Docker with Docker Compose installed.
 - Node.js 18+ (the script installs `pnpm` globally if missing).

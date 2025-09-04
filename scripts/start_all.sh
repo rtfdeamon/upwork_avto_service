@@ -65,8 +65,8 @@ fi
 # build API once
 pnpm --filter api run build
 
-# start API and worker in background
-PORT=${PORT:-4000} node apps/api/dist/main.js &
+# start API and worker in background (ensure DB_PORT aligns with docker-compose)
+DB_PORT=${DB_PORT:-5434} PORT=${PORT:-4000} node apps/api/dist/main.js &
 
 API_PID=$!
 pnpm poller:dev &

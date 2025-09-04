@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: upwork
       POSTGRES_DB: upwork
     ports:
-      - '5434:5434'
+      - '5434:5432'
     volumes:
       - db-data:/var/lib/postgresql/data
   prometheus:
@@ -36,5 +36,72 @@ services:
       - '3000:3000'
     volumes:
       - ./infra/monitoring/dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json:ro
+  localstack:
+    image: localstack/localstack:3
+    environment:
+      - SERVICES=sqs
+      - EDGE_PORT=4566
+    ports:
+      - '4566:4566'
+  redis:
+    image: redis:7
+    ports:
+      - '6379:6379'
+  py-api:
+    build:
+      context: .
+      dockerfile: python/api/Dockerfile
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=upwork
+      - DB_PASS=upwork
+      - DB_NAME=upwork
+      - OPENAI_API_KEY
+      - OPENAI_ORG_ID
+      - OPENAI_MODEL_PRIMARY=gpt-4o
+      - OPENAI_MODEL_FALLBACK=gpt-4o-mini,gpt-3.5-turbo-0125
+      - OPENAI_TPM=200000
+      - REDIS_URL=redis://redis:6379
+      - UPWORK_MOCK=1
+    ports:
+      - '4000:4000'
+    depends_on:
+      - db
+      - redis
+  py-worker:
+    build:
+      context: .
+      dockerfile: python/worker/Dockerfile
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=upwork
+      - DB_PASS=upwork
+      - DB_NAME=upwork
+      - OPENAI_API_KEY
+      - OPENAI_ORG_ID
+      - OPENAI_MODEL_PRIMARY=gpt-4o
+      - OPENAI_MODEL_FALLBACK=gpt-4o-mini,gpt-3.5-turbo-0125
+      - OPENAI_TPM=200000
+      - REDIS_URL=redis://redis:6379
+      - AWS_REGION=us-east-1
+      - JOBS_QUEUE=jobs.fifo
+      - AWS_ENDPOINT_URL=http://localstack:4566
+    depends_on:
+      - db
+      - redis
+      - localstack
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - API_INTERNAL_URL=http://py-api:4000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - py-api
 volumes:
   db-data:
